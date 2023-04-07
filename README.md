@@ -114,3 +114,11 @@ Configuration Key: `cloudflareDNSProvider`
 | `apiToken` | `string`   |               | `true`   | Cloudflare API token with `All zones - DNS:Read, DNS:Edit` permissions |
 | `zoneID`   | `string`   |               | `true`   | Cloudflare zone id                                                     |
 | `aRecords` | `[]string` |               | `true`   | List of A records to update                                            |
+
+## Build Docker Image
+Docker image is available at [Docker Hub](https://hub.docker.com/repository/docker/mmianl/ddns/general).
+
+```sh
+export VERSION=`cat VERSION`
+docker build . -t mmianl/ddns:v${VERSION}
+```
