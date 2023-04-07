@@ -135,15 +135,6 @@ func main() {
 		log.Fatal().Msgf("No DNSProvider was configured and enabled")
 	}
 
-	// m, err := d.GetARecordAddresses()
-	// if err != nil {
-	// 	log.Fatal().Msg(err.Error())
-	// }
-
-	// for _, addr := range m {
-	// 	ddnsDNSARecordUpdateTimeGauge.WithLabelValues(addr.ipAddress, addr.aRecord).SetToCurrentTime()
-	// }
-
 	Retry(SyncRecords(i, d), c.WaitInterval, c.RetryInterval)
 }
 

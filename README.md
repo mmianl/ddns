@@ -1,6 +1,11 @@
 # ddns
 ddns is a golang daemon used to update dynamic DNS entries on supported dynamic DNS services.
 
+## Command line flags
+* `-help`: shows help
+* `-config`: Relative or absolute path to the config file (default "./config.yml")
+* `-logLevel`: Log level, possible values: trace, debug, info, warn, error, fatal, panic (default "info")
+
 ## Example Config File
 ```yaml
 waitInterval: "1m"
@@ -32,6 +37,8 @@ cloudflareDNSProvider:
     - "example.com"
     - "www.example.com"
 ```
+
+If multiple DNS or IP Address providers are specified in the config file, only one will take effect, The order of precedence is the order in which the providers are listed below, with the first provider having the highest priority.
 
 ## Global Configuration Parameters
 
