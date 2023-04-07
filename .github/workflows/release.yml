@@ -1,0 +1,60 @@
+name: release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  create-release:
+    if: github.event.pull_request.merged == true
+    name: Create Github Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create env file
+        run: |
+          touch .env
+          echo VERSION=`cat VERSION` >> ${GITHUB_ENV}
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: v${{ env.VERSION }}
+  release-binaries:
+    if: github.event.pull_request.merged == true
+    name: Release Go Binaries
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: ["386", amd64, arm64]
+        exclude:
+          - goarch: "386"
+            goos: darwin
+          - goarch: arm64
+            goos: windows
+    needs: [create-release]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create env file
+        run: |
+          touch .env
+          echo VERSION=`cat VERSION` >> ${GITHUB_ENV}
+      - uses: wangyoucao577/go-release-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: "https://dl.google.com/go/go1.20.3.linux-amd64.tar.gz"
+          binary_name: "ddns"
+          extra_files: LICENSE README.md
+          ldflags: -X 'main.Version=v${{ env.VERSION }}'
+          release_tag: v${{ env.VERSION }}
+          sha256sum: true
+          md5sum: false
+          overwrite: true
