@@ -7,7 +7,6 @@ on:
 
 jobs:
   create-release:
-    if: github.event.pull_request.merged == true
     name: Create Github Release
     runs-on: ubuntu-latest
     permissions:
@@ -24,7 +23,6 @@ jobs:
           prerelease: false
           automatic_release_tag: v${{ env.VERSION }}
   release-binaries:
-    if: github.event.pull_request.merged == true
     name: Release Go Binaries
     runs-on: ubuntu-latest
     permissions:
