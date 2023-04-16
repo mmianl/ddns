@@ -105,7 +105,7 @@ func main() {
 
 	// Initialize Metrics
 	if c.MetricsServerConfig.Enable {
-		ddnsVersionGauge.WithLabelValues("0.0.1", runtime.Version()).Set(1)
+		ddnsVersionGauge.WithLabelValues(Version, runtime.Version()).Set(1)
 		router := httprouter.New()
 		router.GET("/metrics", Metrics())
 
