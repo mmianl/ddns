@@ -116,7 +116,7 @@ Configuration Key: `cloudflareDNSProvider`
 | `aRecords` | `[]string` |               | `true`   | List of A records to update                                            |
 
 ## Build Docker Image
-Docker image is available at [Docker Hub](https://hub.docker.com/repository/docker/mmianl/ddns/general).
+Docker image is available at [Docker Hub](https://hub.docker.com/r/mmianl/ddns).
 
 ```sh
 export VERSION=`cat VERSION`
