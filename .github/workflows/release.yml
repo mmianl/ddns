@@ -51,7 +51,7 @@ jobs:
           goversion: "https://dl.google.com/go/go1.20.3.linux-amd64.tar.gz"
           binary_name: "ddns"
           extra_files: LICENSE README.md
-          ldflags: -X 'main.Version=v${{ env.VERSION }}'
+          ldflags: -X main.Version=v${{ env.VERSION }}
           release_tag: v${{ env.VERSION }}
           sha256sum: true
           md5sum: false
@@ -80,7 +80,7 @@ jobs:
           goversion: "https://dl.google.com/go/go1.20.3.linux-amd64.tar.gz"
           binary_name: "ddns"
           extra_files: LICENSE README.md
-          ldflags: -X 'main.Version=v${{ env.VERSION }}'
+          ldflags: -X main.Version=v${{ env.VERSION }}
           release_tag: v${{ env.VERSION }}
           sha256sum: true
           md5sum: false
