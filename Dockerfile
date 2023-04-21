@@ -17,7 +17,8 @@ COPY LICENSE /ddns
 COPY README.md /ddns
 COPY VERSION /ddns
 COPY **.go /ddns
-RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+RUN export VERSION=$(cat VERSION) && \
+    CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -ldflags="-X 'main.Version=v${VERSION}'" -a -installsuffix cgo -o ddns .
 
 
