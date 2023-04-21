@@ -16,4 +16,4 @@ test:
 	go tool cover -html=c.out -o coverage.html
 
 build:
-	go build -ldflags="-X 'main.Version=v${VERSION}'" -o ddns
+	go build -ldflags="-X main.Version=v${VERSION}" -o ddns
