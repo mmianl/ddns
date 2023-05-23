@@ -122,3 +122,28 @@ Docker image is available at [Docker Hub](https://hub.docker.com/r/mmianl/ddns).
 export VERSION=`cat VERSION`
 docker build . -t mmianl/ddns:v${VERSION}
 ```
+
+## Exmaple Systemd Service File
+This service file assumes that a user called `ddns` exists, and that the config file is located at `/etc/ddns/ddns.yaml`.
+```sh
+sudo groupadd ddns
+sudo useradd -r -g ddns ddns
+sudo mkdir /etc/ddns
+# Write config file to /etc/ddns/ddns.yaml
+sudo chmod 600 /etc/ddns/ddns.yaml
+sudo chown ddns:ddns -R /etc/ddns/
+```
+
+```sh
+[Unit]
+Description=Dynamic DNS Client
+After=network.target
+
+[Service]
+Type=simple
+User=ddns
+ExecStart=/usr/local/bin/ddns -config /etc/ddns/ddns.yaml
+
+[Install]
+WantedBy=multi-user.target
+```
