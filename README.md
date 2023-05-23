@@ -4,7 +4,7 @@ ddns is a golang daemon used to update dynamic DNS entries on supported dynamic 
 ## Command line flags
 * `-help`: shows help
 * `-config`: Relative or absolute path to the config file (default "./config.yml")
-* `-logLevel`: Log level, possible values: trace, debug, info, warn, error, fatal, panic (default "info")
+* `-logLevel`: Log level, possible values: trace, debug, info, warn, error, fatal, panic and disabled (default "info")
 
 ## Example Config File
 ```yaml

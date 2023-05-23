@@ -83,8 +83,6 @@ func SyncRecords(i IPAddressProvider, d DNSProvider) func() error {
 }
 
 func main() {
-	log.Debug().Msgf("Running ddns version %s", Version)
-
 	// Initialize Logging
 	logLevel := flag.String("logLevel", "info", "Log level, possible values: trace, debug, info, warn, error, fatal, panic")
 	configPath := flag.String("config", "./config.yml", "Relative or absolute path to the config file")
@@ -96,6 +94,7 @@ func main() {
 	} else {
 		log.Error().Msgf("Could not parse log level '%s', defaulting to 'info'", *logLevel)
 	}
+	log.Info().Msgf("Running ddns version %s", Version)
 
 	// Initialize Config
 	c, err := NewConfig(*configPath)
