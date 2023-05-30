@@ -156,7 +156,7 @@ func GetContentByName(response cloudfareListRecordsResponse, name string) (*Reco
 
 // Set the provided A record to the provided ip address
 func (c *CloudflareDNSProvider) SetARecordAddress(ipAddress string, m RecordAddressMapping) error {
-	log.Info().Msgf("Setting A record %s to %s", m.aRecord, m.ipAddress)
+	log.Info().Msgf("Setting A record %s to %s", m.aRecord, ipAddress)
 
 	// Make request
 	requestURL := fmt.Sprintf("https://api.cloudflare.com/client/v4/zones/%s/dns_records/%s", c.zoneID, m.id)
