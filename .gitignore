@@ -28,3 +28,4 @@ go.work
 ddns
 coverage.html
 config.yml
+.idea

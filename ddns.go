@@ -13,15 +13,15 @@ import (
 )
 
 type IPAddressProvider interface {
-	// Get the current ip address from provider
+	// GetIPAddress Get the current ip address from provider
 	GetIPAddress() (*string, error)
 }
 
 type DNSProvider interface {
-	// Get the ip addresses which are currently set for the A records
+	// GetARecordAddresses Get the ip addresses which are currently set for the A records
 	GetARecordAddresses() ([]RecordAddressMapping, error)
 
-	// Set the current ip address for the provided A record
+	// SetARecordAddress Set the current ip address for the provided A record
 	SetARecordAddress(string, RecordAddressMapping) error
 }
 
@@ -35,7 +35,7 @@ type RecordAddressMapping struct {
 
 var Version = "development"
 
-// Repeatedly run the Retryable function and wait between successful and failed attempts
+// Retry Repeatedly run the Retryable function and wait between successful and failed attempts
 func Retry(retryable Retryable, waitInterval time.Duration, retryInterval time.Duration) {
 	for {
 		err := retryable()
@@ -49,7 +49,7 @@ func Retry(retryable Retryable, waitInterval time.Duration, retryInterval time.D
 	}
 }
 
-// Updates the A records if required
+// SyncRecords Updates the A records if required
 func SyncRecords(i IPAddressProvider, d DNSProvider) func() error {
 	return func() error {
 		addressToSet, err := i.GetIPAddress()
@@ -137,7 +137,7 @@ func main() {
 	Retry(SyncRecords(i, d), c.WaitInterval, c.RetryInterval)
 }
 
-// Returns an instrance of IPAddressProvider based on the passed configuration
+// IPAddressProviderFactory Returns an instrance of IPAddressProvider based on the passed configuration
 func IPAddressProviderFactory(c *Config) IPAddressProvider {
 	if c.StaticIPAddressProviderConfig.Enable {
 		log.Debug().Msgf("Using StaticIPAddressProvider as IPAddressProvider")
@@ -150,7 +150,7 @@ func IPAddressProviderFactory(c *Config) IPAddressProvider {
 	return nil
 }
 
-// Returns an instrance of DNSProvider based on the passed configuration
+// DNSProviderFactory Returns an instrance of DNSProvider based on the passed configuration
 func DNSProviderFactory(c *Config) DNSProvider {
 	if c.CloudflareDNSProviderConfig.Enable {
 		log.Debug().Msgf("Using CloudflareDNSProvider as DNSProvider")

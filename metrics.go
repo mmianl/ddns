@@ -33,7 +33,7 @@ var (
 	)
 )
 
-// Return a httprouter.Handle function that handles metrics requests
+// Metrics Return a httprouter.Handle function that handles metrics requests
 func Metrics() httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		promhttp.Handler().ServeHTTP(w, r)

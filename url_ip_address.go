@@ -12,7 +12,7 @@ import (
 )
 
 type URLIPAddressProviderConfig struct {
-	// Swtich to enable or disable this provider
+	// Switch to enable or disable this provider
 	Enable bool `yaml:"enable"`
 
 	// URL to get the ip address from excluding the protocol
@@ -53,7 +53,7 @@ type URLIPAddressProvider struct {
 	password           string
 }
 
-// Returns an instance of URLIPAddressProvider based on the passed configuration
+// NewURLIPAddressProvider Returns an instance of URLIPAddressProvider based on the passed configuration
 func NewURLIPAddressProvider(config *URLIPAddressProviderConfig) *URLIPAddressProvider {
 	return &URLIPAddressProvider{
 		url:                config.URL,
@@ -65,7 +65,7 @@ func NewURLIPAddressProvider(config *URLIPAddressProviderConfig) *URLIPAddressPr
 	}
 }
 
-// Retuns the ip address returned by the url, and parsed using the regex provided via the configuration
+// GetIPAddress Returns the ip address returned by the url, and parsed using the regex provided via the configuration
 func (u *URLIPAddressProvider) GetIPAddress() (*string, error) {
 	// Make request
 	proto := "http"
@@ -95,7 +95,13 @@ func (u *URLIPAddressProvider) GetIPAddress() (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Error().Msgf("error %s occurred while closing response body", err)
+		}
+	}(res.Body)
 
 	// Parse body
 	if res.StatusCode != http.StatusOK {
@@ -127,7 +133,7 @@ func (u *URLIPAddressProvider) GetIPAddress() (*string, error) {
 	return addr, nil
 }
 
-// Returns the first numbered match group, or an error if there are no matches or if there a are more than 1
+// GetRegexSubstring Returns the first numbered match group, or an error if there are no matches or if there are more than 1
 func GetRegexSubstring(regex string, s string) (*string, error) {
 	re, err := regexp.Compile(regex)
 	if err != nil {
@@ -136,7 +142,7 @@ func GetRegexSubstring(regex string, s string) (*string, error) {
 
 	r := re.FindStringSubmatch(s)
 	if len(r) != 2 {
-		return nil, fmt.Errorf("unexpcted result when applying regex to %s", s)
+		return nil, fmt.Errorf("unexpected result when applying regex to %s", s)
 	}
 
 	return &r[1], nil
