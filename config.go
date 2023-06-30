@@ -1,12 +1,14 @@
 package main
 
 import (
+	"github.com/rs/zerolog/log"
 	"os"
 	"time"
 
 	"gopkg.in/yaml.v2"
 )
 
+// MetricsServerConfig Config section governing the metrics http server
 type MetricsServerConfig struct {
 	// Switch to turn on or off the http server that serves the metrics endpoint at /metrics
 	Enable bool `yaml:"enable"`
@@ -18,6 +20,7 @@ type MetricsServerConfig struct {
 	Port string `yaml:"port"`
 }
 
+// Config section governing the general configuration of the application
 type Config struct {
 	// Go duration to wait after a successful update attempt
 	WaitInterval time.Duration `yaml:"waitInterval"`
@@ -61,7 +64,12 @@ func NewConfig(configPath string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Error().Msgf("error %s occurred while closing file %s", err, file.Name())
+		}
+	}(file)
 
 	d := yaml.NewDecoder(file)
 
