@@ -57,11 +57,11 @@ Configuration Key: `metricsServer`
 | `port`   | `string` | `9097`        | `false`  | Port to be bound by the metrics handler              |
 
 ### Available Metrics
-| Name                                    | Type    | Help                                                                                             |
-|-----------------------------------------|---------|--------------------------------------------------------------------------------------------------|
-| `ddns_build_info`                       | `Gauge` | Metric with a constant '1' value labeled by version and goversion from which ddns was built.     |
-| `ddns_start_time_seconds`               | `Gauge` | Start time of the process since unix epoch in seconds.                                           |
-| `ddns_dns_a_record_update_time_seconds` | `Gauge` | Time of last DNS A record update since unix epoch in seconds labeled by IP address and A Record. |
+| Name                                    | Type    | Help                                                                                         |
+|-----------------------------------------|---------|----------------------------------------------------------------------------------------------|
+| `ddns_build_info`                       | `Gauge` | Metric with a constant '1' value labeled by version and goversion from which ddns was built. |
+| `ddns_start_time_seconds`               | `Gauge` | Start time of the process since unix epoch in seconds.                                       |
+| `ddns_dns_a_record_info`                | `Gauge` | Metric with a constant '1' value showing the current a records and their ip addresses.       |
 
 ## Available Providers for Retrieving the IP Address
 
