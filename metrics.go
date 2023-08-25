@@ -24,10 +24,10 @@ var (
 		},
 		[]string{},
 	)
-	ddnsDNSARecordUpdateTimeGauge = promauto.NewGaugeVec(
+	ddnsDNSARecordInfoGauge = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "ddns_dns_a_record_update_time_seconds",
-			Help: "Time of last DNS A record update since unix epoch in seconds labeled by IP address and A Record.",
+			Name: "ddns_dns_a_record_info",
+			Help: "Metric with a constant '1' value showing the current a records and their ip addresses.",
 		},
 		[]string{"ip_address", "a_record"},
 	)
