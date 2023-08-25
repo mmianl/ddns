@@ -16,7 +16,7 @@ func TestMetrics(t *testing.T) {
 	ddnsVersionGauge.WithLabelValues(Version, runtime.Version()).Set(1)
 	now := time.Now()
 	ddnsStartTimeGauge.WithLabelValues().Set(float64(now.Unix()))
-	ddnsDNSARecordUpdateTimeGauge.WithLabelValues("127.0.0.1", "test.example.com").SetToCurrentTime()
+	ddnsDNSARecordInfoGauge.WithLabelValues("127.0.0.1", "test.example.com").SetToCurrentTime()
 
 	router := httprouter.New()
 	router.GET("/metrics", Metrics())
@@ -38,7 +38,7 @@ func TestMetrics(t *testing.T) {
 	if !strings.Contains(rr.Body.String(), "ddns_start_time_seconds") {
 		t.Errorf("Expected response body to contain ddns_start_time_seconds, got %s", rr.Body.String())
 	}
-	if !strings.Contains(rr.Body.String(), "ddns_dns_a_record_update_time_seconds") {
-		t.Errorf("Expected response body to contain ddns_dns_a_record_update_time_seconds, got %s", rr.Body.String())
+	if !strings.Contains(rr.Body.String(), "ddns_dns_a_record_info") {
+		t.Errorf("Expected response body to contain ddns_dns_a_record_info, got %s", rr.Body.String())
 	}
 }

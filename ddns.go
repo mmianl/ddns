@@ -68,13 +68,14 @@ func SyncRecords(i IPAddressProvider, d DNSProvider) func() error {
 
 			if *addressToSet != addr.ipAddress {
 				log.Info().Msg("Ip address of A record did not match obtained address")
-				ddnsDNSARecordUpdateTimeGauge.WithLabelValues(*addressToSet, addr.aRecord).SetToCurrentTime()
+				ddnsDNSARecordInfoGauge.WithLabelValues(*addressToSet, addr.aRecord).Set(1)
 
 				if err := d.SetARecordAddress(*addressToSet, addr); err != nil {
 					return err
 				}
 			} else {
 				log.Info().Msgf("Ip address of A record matched obtained address, no update required")
+				ddnsDNSARecordInfoGauge.WithLabelValues(addr.ipAddress, addr.aRecord).Set(1)
 			}
 		}
 
