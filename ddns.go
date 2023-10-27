@@ -137,7 +137,7 @@ func main() {
 	Retry(SyncRecords(i, d), c.WaitInterval, c.RetryInterval)
 }
 
-// IPAddressProviderFactory Returns an instrance of IPAddressProvider based on the passed configuration
+// IPAddressProviderFactory Returns an instance of IPAddressProvider based on the passed configuration
 func IPAddressProviderFactory(c *Config) IPAddressProvider {
 	if c.StaticIPAddressProviderConfig.Enable {
 		log.Debug().Msgf("Using StaticIPAddressProvider as IPAddressProvider")
@@ -150,7 +150,7 @@ func IPAddressProviderFactory(c *Config) IPAddressProvider {
 	return nil
 }
 
-// DNSProviderFactory Returns an instrance of DNSProvider based on the passed configuration
+// DNSProviderFactory Returns an instance of DNSProvider based on the passed configuration
 func DNSProviderFactory(c *Config) DNSProvider {
 	if c.CloudflareDNSProviderConfig.Enable {
 		log.Debug().Msgf("Using CloudflareDNSProvider as DNSProvider")
