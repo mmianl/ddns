@@ -123,7 +123,7 @@ export VERSION=`cat VERSION`
 docker build . -t mmianl/ddns:v${VERSION}
 ```
 
-## Exmaple Systemd Service File
+## Example Systemd Service File
 This service file assumes that a user called `ddns` exists, and that the config file is located at `/etc/ddns/ddns.yaml`.
 ```sh
 sudo groupadd ddns
