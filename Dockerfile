@@ -1,4 +1,4 @@
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.20.3 AS builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.21.0 AS builder
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -16,7 +16,10 @@ COPY Makefile /ddns
 COPY LICENSE /ddns
 COPY README.md /ddns
 COPY VERSION /ddns
-COPY **.go /ddns
+COPY main.go /ddns
+COPY cmd /ddns/cmd
+COPY internal /ddns/internal
+
 RUN export VERSION=$(cat VERSION) && \
     CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -ldflags="-X 'main.Version=v${VERSION}'" -a -installsuffix cgo -o ddns .
@@ -28,6 +31,6 @@ WORKDIR /ddns
 COPY --chown=nonroot --from=builder /ddns/ddns /ddns
 COPY --chown=nonroot --from=builder /ddns/README.md /ddns
 
-CMD ["/ddns/ddns"]
+CMD ["/ddns/ddns", "serve"]
 
 USER nonroot:nonroot

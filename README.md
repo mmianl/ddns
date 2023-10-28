@@ -1,10 +1,28 @@
-# ddns
-ddns is a golang tool used to update dynamic DNS entries on supported dynamic DNS services.
+# DDNS
+DDNS is a golang tool used to update dynamic DNS entries on supported dynamic DNS services.
 
 ## Command line flags
-* `-help`: shows help
-* `-config`: Relative or absolute path to the config file (default "./config.yml")
-* `-logLevel`: Log level, possible values: trace, debug, info, warn, error, fatal, panic and disabled (default "info")
+```sh
+The DDNS CLI lets you interact with the DDNS service
+
+Usage:
+  ddns [flags]
+  ddns [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  run         Run A record synchronization once
+  serve       Serve daemon that periodically performs A record synchronization
+
+Flags:
+      --config string     relative or absolute path to the config file (default "./config.yml")
+  -h, --help              help for ddns
+      --loglevel string   log level, possible values: trace, debug, info, warn, error, fatal, panic (default "info")
+  -v, --version           version for ddns
+
+Use "ddns [command] --help" for more information about a command.
+```
 
 ## Example Config File
 ```yaml
