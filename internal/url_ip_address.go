@@ -121,7 +121,7 @@ func (u *URLIPAddressProvider) GetIPAddress() (*string, error) {
 		return addr, nil
 	}
 
-	addr, err := getRegexSubstring(u.regex, bodyString)
+	addr, err := GetRegexSubstring(u.regex, bodyString)
 	if err != nil {
 		return nil, err
 	}
@@ -133,8 +133,8 @@ func (u *URLIPAddressProvider) GetIPAddress() (*string, error) {
 	return addr, nil
 }
 
-// getRegexSubstring Returns the first numbered match group, or an error if there are no matches or if there are more than 1
-func getRegexSubstring(regex string, s string) (*string, error) {
+// GetRegexSubstring Returns the first numbered match group, or an error if there are no matches or if there are more than 1
+func GetRegexSubstring(regex string, s string) (*string, error) {
 	re, err := regexp.Compile(regex)
 	if err != nil {
 		return nil, err

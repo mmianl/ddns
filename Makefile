@@ -17,3 +17,6 @@ test:
 
 build:
 	go build -ldflags="-X main.Version=v${VERSION}" -o ddns
+
+docker:
+	docker build . -t mmianl/ddns:v${VERSION}

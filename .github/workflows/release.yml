@@ -48,7 +48,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          goversion: "https://dl.google.com/go/go1.20.3.linux-amd64.tar.gz"
+          goversion: "https://dl.google.com/go/go1.21.0.linux-amd64.tar.gz"
           binary_name: "ddns"
           extra_files: LICENSE README.md
           ldflags: -X main.Version=v${{ env.VERSION }}
@@ -77,7 +77,7 @@ jobs:
           goos: linux
           goarch: arm
           goarm: ${{ matrix.goarm }}
-          goversion: "https://dl.google.com/go/go1.20.3.linux-amd64.tar.gz"
+          goversion: "https://dl.google.com/go/go1.21.0.linux-amd64.tar.gz"
           binary_name: "ddns"
           extra_files: LICENSE README.md
           ldflags: -X main.Version=v${{ env.VERSION }}
