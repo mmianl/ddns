@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"bytes"
@@ -15,16 +15,16 @@ import (
 // CloudflareDNSProviderConfig Configuration for Cloudflare DNS Provider
 type CloudflareDNSProviderConfig struct {
 	// Switch to enable or disable this provider
-	Enable bool `yaml:"enable"`
+	Enable bool `yaml:"enable" envconfig:"DDNS_CLOUDFLARE_PROVIDER_ENABLE" required:"false"`
 
 	// Cloudflare API Token with "All zones - DNS:Read, DNS:Edit" permissions
-	APIToken string `yaml:"apiToken"`
+	APIToken string `yaml:"apiToken" envconfig:"DDNS_CLOUDFLARE_API_TOKEN" required:"false"`
 
 	// Cloudflare Zone ID
-	ZoneID string `yaml:"zoneID"`
+	ZoneID string `yaml:"zoneID" envconfig:"DDNS_CLOUDFLARE_PROVIDER_ZONE_ID" required:"false"`
 
 	// List of A Records
-	ARecords []string `yaml:"aRecords"`
+	ARecords []string `yaml:"aRecords" envconfig:"DDNS_CLOUDFLARE_PROVIDER_RECORDS" required:"false"`
 }
 
 type cloudflareListRecordsResponse struct {
@@ -127,49 +127,17 @@ func (c *CloudflareDNSProvider) GetARecordAddresses() ([]RecordAddressMapping, e
 		return nil, err
 	}
 
-	return GetContentsByNames(r, c.aRecords)
-}
-
-// GetContentsByNames Return the RecordAddressMappings with the current ip addresses for the provided names
-func GetContentsByNames(response cloudflareListRecordsResponse, names []string) ([]RecordAddressMapping, error) {
-	var ms []RecordAddressMapping
-
-	for _, name := range names {
-
-		m, err := GetContentByName(response, name)
-		if err != nil {
-			return nil, err
-		}
-
-		ms = append(ms, *m)
-	}
-
-	if len(ms) != len(names) {
-		return nil, errors.New("not all a records could not found")
-	}
-
-	return ms, nil
-}
-
-// GetContentByName Return the RecordAddressMapping with the current ip address for the provided name
-func GetContentByName(response cloudflareListRecordsResponse, name string) (*RecordAddressMapping, error) {
-	for _, item := range response.Result {
-		if item.Name == name {
-			return &RecordAddressMapping{id: item.ID, aRecord: name, ipAddress: item.Content}, nil
-		}
-	}
-
-	return nil, fmt.Errorf("no record with name %s was found", name)
+	return getContentsByNames(r, c.aRecords)
 }
 
 // SetARecordAddress Set the provided A record to the provided ip address
 func (c *CloudflareDNSProvider) SetARecordAddress(ipAddress string, m RecordAddressMapping) error {
-	log.Info().Msgf("Setting A record %s to %s", m.aRecord, ipAddress)
+	log.Info().Msgf("Setting A record %s to %s", m.ARecord, ipAddress)
 
 	// Make request
-	requestURL := fmt.Sprintf("https://api.cloudflare.com/client/v4/zones/%s/dns_records/%s", c.zoneID, m.id)
+	requestURL := fmt.Sprintf("https://api.cloudflare.com/client/v4/zones/%s/dns_records/%s", c.zoneID, m.ID)
 	payload := &cloudflareUpdateRecordPayload{
-		Name:    m.aRecord,
+		Name:    m.ARecord,
 		Type:    "A",
 		Content: ipAddress,
 	}
@@ -206,4 +174,35 @@ func (c *CloudflareDNSProvider) SetARecordAddress(ipAddress string, m RecordAddr
 	}
 
 	return nil
+}
+
+// getContentsByNames Return the RecordAddressMappings with the current ip addresses for the provided names
+func getContentsByNames(response cloudflareListRecordsResponse, names []string) ([]RecordAddressMapping, error) {
+	var ms []RecordAddressMapping
+
+	for _, name := range names {
+		m, err := getContentByName(response, name)
+		if err != nil {
+			return nil, err
+		}
+
+		ms = append(ms, *m)
+	}
+
+	if len(ms) != len(names) {
+		return nil, errors.New("not all a records could not found")
+	}
+
+	return ms, nil
+}
+
+// getContentByName Return the RecordAddressMapping with the current ip address for the provided name
+func getContentByName(response cloudflareListRecordsResponse, name string) (*RecordAddressMapping, error) {
+	for _, item := range response.Result {
+		if item.Name == name {
+			return &RecordAddressMapping{ID: item.ID, ARecord: name, IPAddress: item.Content}, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no record with name %s was found", name)
 }

@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"github.com/julienschmidt/httprouter"
@@ -13,10 +13,10 @@ import (
 // TestMetrics tests that the metrics endpoint returns the expected metrics
 func TestMetrics(t *testing.T) {
 	// Start the server
-	ddnsVersionGauge.WithLabelValues(Version, runtime.Version()).Set(1)
+	VersionGauge.WithLabelValues("0.0.0", runtime.Version()).Set(1)
 	now := time.Now()
-	ddnsStartTimeGauge.WithLabelValues().Set(float64(now.Unix()))
-	ddnsDNSARecordInfoGauge.WithLabelValues("127.0.0.1", "test.example.com").SetToCurrentTime()
+	StartTimeGauge.WithLabelValues().Set(float64(now.Unix()))
+	DNSARecordInfoGauge.WithLabelValues("127.0.0.1", "test.example.com").SetToCurrentTime()
 
 	router := httprouter.New()
 	router.GET("/metrics", Metrics())

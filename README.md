@@ -1,5 +1,5 @@
 # ddns
-ddns is a golang daemon used to update dynamic DNS entries on supported dynamic DNS services.
+ddns is a golang tool used to update dynamic DNS entries on supported dynamic DNS services.
 
 ## Command line flags
 * `-help`: shows help
@@ -40,21 +40,23 @@ cloudflareDNSProvider:
 
 If multiple DNS or IP Address providers are specified in the config file, only one will take effect, The order of precedence is the order in which the providers are listed below, with the first provider having the highest priority.
 
+Configuration parameters specified via environment variables take precedence over those specified in the config file.
+
 ## Global Configuration Parameters
 
-| Key             | Type            | Default Value | Required | Description |
-|-----------------|-----------------|---------------|----------|-------------|
-| `waitInterval`  | `time.Duration` | `1m`          | `false`  |             |
-| `retryInterval` | `time.Duration` | `5s`          | `false`  |             |
+| Key             | Env Var               | Type            | Default Value | Required | Description                                                    |
+|-----------------|-----------------------|-----------------|---------------|----------|----------------------------------------------------------------|
+| `waitInterval`  | `DDNS_WAIT_INTERVAL`  | `time.Duration` | `1m`          | `false`  | time.Duration to wait after successfully updating records      |
+| `retryInterval` | `DDNS_RETRY_INTERVAL` | `time.Duration` | `5s`          | `false`  | time.Duration to wait after a failed attempt to update records |
 
 ## Metrics Server Configuration Parameters
 Configuration Key: `metricsServer`
 
-| Key      | Type     | Default Value | Required | Description                                          |
-|----------|----------|---------------|----------|------------------------------------------------------|
-| `enable` | `bool`   | `true`        | `true`   | Enable metrics endpoint listening on `/metrics` path |
-| `host`   | `string` | `0.0.0.0`     | `false`  | Host to be bound by the metrics handler              |
-| `port`   | `string` | `9097`        | `false`  | Port to be bound by the metrics handler              |
+| Key      | Env Var               | Type     | Default Value | Required | Description                                          |
+|----------|-----------------------|----------|---------------|----------|------------------------------------------------------|
+| `enable` | `DDNS_METRICS_ENABLE` | `bool`   | `true`        | `true`   | Enable metrics endpoint listening on `/metrics` path |
+| `host`   | `DDNS_METRICS_HOST`   | `string` | `0.0.0.0`     | `false`  | Host to be bound by the metrics handler              |
+| `port`   | `DDNS_METRICS_PORT`   | `string` | `9097`        | `false`  | Port to be bound by the metrics handler              |
 
 ### Available Metrics
 | Name                                    | Type    | Help                                                                                         |
@@ -66,31 +68,31 @@ Configuration Key: `metricsServer`
 ## Available Providers for Retrieving the IP Address
 
 ### StaticIPAddressProvider
-Ip address provider that returns a the static ip address that is provided in the config file.
+Ip address provider that returns the static ip address that is provided in the config file.
 
 Configuration Key: `staticIPAddressProvider`
 
-| Key                  | Type     | Default Value | Required | Description                 |
-|----------------------|----------|---------------|----------|-----------------------------|
-| `enable`             | `bool`   | `false`       | `true`   | Enable this provider        |
-| `address`            | `string` | `127.0.0.1`   | `false`  | Static ip address to return |
+| Key       | Env Var                        | Type     | Default Value | Required | Description                 |
+|-----------|--------------------------------|----------|---------------|----------|-----------------------------|
+| `enable`  | `DDNS_STATIC_PROVIDER_ENABLE`  | `bool`   | `false`       | `true`   | Enable this provider        |
+| `address` | `DDNS_STATIC_PROVIDER_ADDRESS` | `string` | `127.0.0.1`   | `false`  | Static ip address to return |
 
 ### URLIPAddressProvider
-Ip address provider that makes a get request against the url that is provided in the config file and parses the repsonse body using the regex if defined.
+Ip address provider that makes a get request against the url that is provided in the config file and parses the response body using the regex if defined.
 
 Configuration Key: `urlIPAddressProvider`
 
-| Key                  | Type     | Default Value | Required | Description                                                                                                  |
-|----------------------|----------|---------------|----------|--------------------------------------------------------------------------------------------------------------|
-| `enable`             | `bool`   | `false`       | `true`   | Enable this provider                                                                                         |
-| `url`                | `string` | `127.0.0.1`   | `false`  | URL to get the ip address from with a GET request                                                            |
-| `https`              | `bool`   | `true`        | `false`  | Use https when accessing the url if true, http otherwise                                                     |
-| `insecureSkipVerify` | `bool`   | `false`       | `false`  | Ignore bad certificates when accessing the url                                                               |
-| `regex`              | `string` |               | `false`  | Regex to match the ip address containing a single numbered match group, see https://pkg.go.dev/regexp/syntax |
-| `username`           | `string` |               | `false`  | Basic auth username to use when accessing the url, only set if required                                      |
-| `password`           | `string` |               | `false`  | Basic auth password to use when accessing the url, only set if required                                      |
+| Key                  | Env Var                      | Type     | Default Value | Required | Description                                                                                                  |
+|----------------------|------------------------------|----------|---------------|----------|--------------------------------------------------------------------------------------------------------------|
+| `enable`             | `DDNS_URL_PROVIDER_ENABLE`   | `bool`   | `false`       | `true`   | Enable this provider                                                                                         |
+| `url`                | `DDNS_URL_PROVIDER_URL`      | `string` | `127.0.0.1`   | `false`  | URL to get the ip address from with a GET request                                                            |
+| `https`              | `DDNS_URL_PROVIDER_HTTPS`    | `bool`   | `true`        | `false`  | Use https when accessing the url if true, http otherwise                                                     |
+| `insecureSkipVerify` | `DDNS_URL_PROVIDER_INSECURE` | `bool`   | `false`       | `false`  | Ignore bad certificates when accessing the url                                                               |
+| `regex`              | `DDNS_URL_PROVIDER_REGEX`    | `string` |               | `false`  | Regex to match the ip address containing a single numbered match group, see https://pkg.go.dev/regexp/syntax |
+| `username`           | `DDNS_URL_PROVIDER_USERNAME` | `string` |               | `false`  | Basic auth username to use when accessing the url, only set if required                                      |
+| `password`           | `DDNS_URL_PROVIDER_PASSWORD` | `string` |               | `false`  | Basic auth password to use when accessing the url, only set if required                                      |
 
-For example, if the `website https://www.example.com/ipaddress` retruned this json:
+For example, if the `website https://www.example.com/ipaddress` returned this json:
 ```json
 {"address":"192.168.0.100"}
 ```
@@ -103,24 +105,24 @@ urlIPAddressProvider:
   regex: '"address":\s?"(.*)"'
 ```
 
-## Availbe DNS Providers
+## Available DNS Providers
 
 ### CloudflareDNSProvider
 Configuration Key: `cloudflareDNSProvider`
 
-| Key        | Type       | Default Value | Required | Description                                                            |
-|------------|------------|---------------|----------|------------------------------------------------------------------------|
-| `enable`   | `bool`     | `false`       | `true`   | Enable this provider                                                   |
-| `apiToken` | `string`   |               | `true`   | Cloudflare API token with `All zones - DNS:Read, DNS:Edit` permissions |
-| `zoneID`   | `string`   |               | `true`   | Cloudflare zone id                                                     |
-| `aRecords` | `[]string` |               | `true`   | List of A records to update                                            |
+| Key        | Env Var                            | Type       | Default Value | Required | Description                                                            |
+|------------|------------------------------------|------------|---------------|----------|------------------------------------------------------------------------|
+| `enable`   | `DDNS_CLOUDFLARE_PROVIDER_ENABLE`  | `bool`     | `false`       | `true`   | Enable this provider                                                   |
+| `apiToken` | `DDNS_CLOUDFLARE_API_TOKEN`        | `string`   |               | `true`   | Cloudflare API token with `All zones - DNS:Read, DNS:Edit` permissions |
+| `zoneID`   | `DDNS_CLOUDFLARE_PROVIDER_ZONE_ID` | `string`   |               | `true`   | Cloudflare zone id                                                     |
+| `aRecords` | `DDNS_CLOUDFLARE_PROVIDER_RECORDS` | `[]string` |               | `true`   | List of A records to update                                            |
 
 ## Build Docker Image
 Docker image is available at [Docker Hub](https://hub.docker.com/r/mmianl/ddns).
 
 ```sh
 export VERSION=`cat VERSION`
-docker build . -t mmianl/ddns:v${VERSION}
+docker build . -t ddns:v${VERSION}
 ```
 
 ## Example Systemd Service File

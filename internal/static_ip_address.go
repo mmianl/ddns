@@ -1,11 +1,11 @@
-package main
+package internal
 
 type StaticIPAddressProviderConfig struct {
 	// Switch to enable or disable this provider
-	Enable bool `yaml:"enable"`
+	Enable bool `yaml:"enable" envconfig:"DDNS_STATIC_PROVIDER_ENABLE" required:"false"`
 
 	// Static ip address returned by this provider
-	Address string `yaml:"address"`
+	Address string `yaml:"address" envconfig:"DDNS_STATIC_PROVIDER_ADDRESS" required:"false"`
 }
 
 var defaultStaticIPAddressProviderConfig = &StaticIPAddressProviderConfig{
