@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"net/http"
@@ -10,21 +10,21 @@ import (
 )
 
 var (
-	ddnsVersionGauge = promauto.NewGaugeVec(
+	VersionGauge = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "ddns_build_info",
 			Help: "Metric with a constant '1' value labeled by version and goversion from which ddns was built.",
 		},
 		[]string{"version", "goversion"},
 	)
-	ddnsStartTimeGauge = promauto.NewGaugeVec(
+	StartTimeGauge = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "ddns_start_time_seconds",
 			Help: "Start time of the process since unix epoch in seconds.",
 		},
 		[]string{},
 	)
-	ddnsDNSARecordInfoGauge = promauto.NewGaugeVec(
+	DNSARecordInfoGauge = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "ddns_dns_a_record_info",
 			Help: "Metric with a constant '1' value showing the current a records and their ip addresses.",

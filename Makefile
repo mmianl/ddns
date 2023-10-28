@@ -12,7 +12,7 @@ lint: prepare
 	golangci-lint run
 
 test:
-	go test -coverprofile=c.out
+	go test ./... -coverprofile=c.out
 	go tool cover -html=c.out -o coverage.html
 
 build:

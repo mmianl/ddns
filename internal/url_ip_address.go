@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"crypto/tls"
@@ -13,25 +13,25 @@ import (
 
 type URLIPAddressProviderConfig struct {
 	// Switch to enable or disable this provider
-	Enable bool `yaml:"enable"`
+	Enable bool `yaml:"enable" envconfig:"DDNS_URL_PROVIDER_ENABLE" required:"false"`
 
 	// URL to get the ip address from excluding the protocol
-	URL string `yaml:"url"`
+	URL string `yaml:"url" envconfig:"DDNS_URL_PROVIDER_URL" required:"false"`
 
 	// Switch to turn on or off https, will be http if off
-	HTTPS bool `yaml:"https"`
+	HTTPS bool `yaml:"https" envconfig:"DDNS_URL_PROVIDER_HTTPS" required:"false"`
 
 	// Switch to turn on or off https, will be http if off
-	InsecureSkipVerify bool `yaml:"insecureSkipVerify"`
+	InsecureSkipVerify bool `yaml:"insecureSkipVerify" envconfig:"DDNS_URL_PROVIDER_INSECURE" required:"false"`
 
 	// Regex containing a single numbered match group, see https://pkg.go.dev/regexp/syntax
-	Regex string `yaml:"regex"`
+	Regex string `yaml:"regex" envconfig:"DDNS_URL_PROVIDER_REGEX" required:"false"`
 
 	// BasicAuth username
-	Username string `yaml:"username"`
+	Username string `yaml:"username" envconfig:"DDNS_URL_PROVIDER_USERNAME" required:"false"`
 
 	// BasicAuth password
-	Password string `yaml:"password"`
+	Password string `yaml:"password" envconfig:"DDNS_URL_PROVIDER_PASSWORD" required:"false"`
 }
 
 var defaultURLIPAddressProviderConfig = &URLIPAddressProviderConfig{
@@ -121,7 +121,7 @@ func (u *URLIPAddressProvider) GetIPAddress() (*string, error) {
 		return addr, nil
 	}
 
-	addr, err := GetRegexSubstring(u.regex, bodyString)
+	addr, err := getRegexSubstring(u.regex, bodyString)
 	if err != nil {
 		return nil, err
 	}
@@ -133,8 +133,8 @@ func (u *URLIPAddressProvider) GetIPAddress() (*string, error) {
 	return addr, nil
 }
 
-// GetRegexSubstring Returns the first numbered match group, or an error if there are no matches or if there are more than 1
-func GetRegexSubstring(regex string, s string) (*string, error) {
+// getRegexSubstring Returns the first numbered match group, or an error if there are no matches or if there are more than 1
+func getRegexSubstring(regex string, s string) (*string, error) {
 	re, err := regexp.Compile(regex)
 	if err != nil {
 		return nil, err

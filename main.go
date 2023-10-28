@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ddns/main/v2/internal"
 	"flag"
 	"fmt"
 	"net/http"
@@ -19,19 +20,13 @@ type IPAddressProvider interface {
 
 type DNSProvider interface {
 	// GetARecordAddresses Get the ip addresses which are currently set for the A records
-	GetARecordAddresses() ([]RecordAddressMapping, error)
+	GetARecordAddresses() ([]internal.RecordAddressMapping, error)
 
 	// SetARecordAddress Set the current ip address for the provided A record
-	SetARecordAddress(string, RecordAddressMapping) error
+	SetARecordAddress(string, internal.RecordAddressMapping) error
 }
 
 type Retryable func() error
-
-type RecordAddressMapping struct {
-	id        string
-	aRecord   string
-	ipAddress string
-}
 
 var Version = "development"
 
@@ -64,17 +59,17 @@ func SyncRecords(i IPAddressProvider, d DNSProvider) func() error {
 		}
 
 		for _, addr := range setAddresses {
-			log.Info().Msgf("A record for %s is currently set to %s", addr.aRecord, addr.ipAddress)
+			log.Info().Msgf("A record for %s is currently set to %s", addr.ARecord, addr.IPAddress)
 
-			if *addressToSet != addr.ipAddress {
+			if *addressToSet != addr.IPAddress {
 				log.Info().Msg("Ip address of A record did not match obtained address")
 				if err := d.SetARecordAddress(*addressToSet, addr); err != nil {
 					return err
 				}
-				ddnsDNSARecordInfoGauge.WithLabelValues(*addressToSet, addr.aRecord).Set(1)
+				internal.DNSARecordInfoGauge.WithLabelValues(*addressToSet, addr.ARecord).Set(1)
 			} else {
 				log.Info().Msgf("Ip address of A record matched obtained address, no update required")
-				ddnsDNSARecordInfoGauge.WithLabelValues(addr.ipAddress, addr.aRecord).Set(1)
+				internal.DNSARecordInfoGauge.WithLabelValues(addr.IPAddress, addr.ARecord).Set(1)
 			}
 		}
 
@@ -97,19 +92,21 @@ func main() {
 	log.Info().Msgf("Running ddns version %s", Version)
 
 	// Initialize Config
-	c, err := NewConfig(*configPath)
+	err := internal.GatherConfig(*configPath)
 	if err != nil {
 		log.Fatal().Msgf("Error while loading the config file at %s: %s", *configPath, err)
 	}
 
+	c := internal.GetConfig()
+
 	// Initialize Metrics
 	if c.MetricsServerConfig.Enable {
-		ddnsVersionGauge.WithLabelValues(Version, runtime.Version()).Set(1)
+		internal.VersionGauge.WithLabelValues(Version, runtime.Version()).Set(1)
 		router := httprouter.New()
-		router.GET("/metrics", Metrics())
+		router.GET("/metrics", internal.Metrics())
 
 		now := time.Now()
-		ddnsStartTimeGauge.WithLabelValues().Set(float64(now.Unix()))
+		internal.StartTimeGauge.WithLabelValues().Set(float64(now.Unix()))
 
 		ch := make(chan bool)
 		go func() {
@@ -138,23 +135,23 @@ func main() {
 }
 
 // IPAddressProviderFactory Returns an instance of IPAddressProvider based on the passed configuration
-func IPAddressProviderFactory(c *Config) IPAddressProvider {
+func IPAddressProviderFactory(c *internal.Config) IPAddressProvider {
 	if c.StaticIPAddressProviderConfig.Enable {
 		log.Debug().Msgf("Using StaticIPAddressProvider as IPAddressProvider")
-		return NewStaticIPAddressProvider(&c.StaticIPAddressProviderConfig)
+		return internal.NewStaticIPAddressProvider(&c.StaticIPAddressProviderConfig)
 	} else if c.URLIPAddressProviderConfig.Enable {
 		log.Debug().Msgf("Using URLIPAddressProvider as IPAddressProvider")
-		return NewURLIPAddressProvider(&c.URLIPAddressProviderConfig)
+		return internal.NewURLIPAddressProvider(&c.URLIPAddressProviderConfig)
 	}
 
 	return nil
 }
 
 // DNSProviderFactory Returns an instance of DNSProvider based on the passed configuration
-func DNSProviderFactory(c *Config) DNSProvider {
+func DNSProviderFactory(c *internal.Config) DNSProvider {
 	if c.CloudflareDNSProviderConfig.Enable {
 		log.Debug().Msgf("Using CloudflareDNSProvider as DNSProvider")
-		return NewCloudflareDNSProvider(&c.CloudflareDNSProviderConfig)
+		return internal.NewCloudflareDNSProvider(&c.CloudflareDNSProviderConfig)
 	}
 
 	return nil
