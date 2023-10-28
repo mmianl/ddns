@@ -3,9 +3,6 @@ module ddns/main/v2
 go 1.20
 
 require (
-	github.com/aquilax/truncate v1.0.0
-	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/google/uuid v1.3.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/prometheus/client_golang v1.14.0
 	github.com/rs/zerolog v1.29.0
